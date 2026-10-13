@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://cvmy8sqrwekwq"]
+
+[ext_resource type="Script" uid="uid://cgwevbt5y6o8g" path="res://ground.gd" id="1_ayuu8"]
+[ext_resource type="Texture2D" uid="uid://dfddh66qpj1y" path="res://icon.svg" id="1_iapjp"]
+[ext_resource type="PackedScene" uid="uid://bppr03cvxjyam" path="res://paddle.tscn" id="2_8n7uv"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cxmsn"]
+size = Vector2(47.8, 47.8)
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_8n7uv"]
+load_path = "res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex"
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_cxmsn"]
+bounce = 0.9
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cxmsn"]
+radius = 24.020824
+
+[node name="DemoScene" type="Node2D" unique_id=866516815]
+
+[node name="Ground" type="StaticBody2D" parent="." unique_id=1802848334 groups=["ground"]]
+position = Vector2(563, 648)
+scale = Vector2(22.1, 1)
+script = ExtResource("1_ayuu8")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="Ground" unique_id=1861146190]
+scale = Vector2(0.375, 0.375)
+texture = ExtResource("1_iapjp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground" unique_id=544626637]
+shape = SubResource("RectangleShape2D_cxmsn")
+
+[node name="0_5" type="StaticBody2D" parent="." unique_id=1663787919 groups=["net"]]
+position = Vector2(563, 553)
+scale = Vector2(0.4, 4)
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="0_5" unique_id=1929035938]
+scale = Vector2(0.375, 0.375)
+texture = SubResource("CompressedTexture2D_8n7uv")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="0_5" unique_id=553570969]
+shape = SubResource("RectangleShape2D_cxmsn")
+
+[node name="Ball" type="RigidBody2D" parent="." unique_id=866259283 groups=["ball"]]
+position = Vector2(240, 337)
+physics_material_override = SubResource("PhysicsMaterial_cxmsn")
+contact_monitor = true
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="Ball" unique_id=1882952461]
+scale = Vector2(0.375, 0.375)
+texture = SubResource("CompressedTexture2D_8n7uv")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ball" unique_id=1693951780]
+shape = SubResource("CircleShape2D_cxmsn")
+
+[node name="Paddle" parent="." unique_id=1663591684 instance=ExtResource("2_8n7uv")]
+position = Vector2(134, 422)
+
+[node name="Paddle2" parent="." unique_id=33278098 instance=ExtResource("2_8n7uv")]
+position = Vector2(994, 423)

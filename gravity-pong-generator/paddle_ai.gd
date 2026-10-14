@@ -23,9 +23,9 @@ class MovementData:
 		target_pos = trgt
 
 
-const TARGET_OFFSET: Vector2 = Vector2(20, 30)
+const TARGET_OFFSET: Vector2 = Vector2(-30, 50)
 const STRIKE_RANGE: float = 100
-const STRIKE_MOD: float = 5
+const STRIKE_MOD: float = 2
 
 var BASE_POS: Vector2
 var MAX_SPEED: float
@@ -42,7 +42,7 @@ func _init(base_pos: Vector2, max_speed: float, side: int) -> void:
 
 
 ## tell an object where to move and how fast to move there
-func find_movement_data() -> MovementData:
+func find_movement_data(position: Vector2) -> MovementData:
 	match state:
 		State.CHASE:
 			return MovementData.new(
@@ -68,11 +68,16 @@ func update_state(position: Vector2, collision: KinematicCollision2D) -> void:
 
 	if Utilities.is_ball_hit(collision):
 		_enter_state(State.RETREAT)
-
+	elif state == State.RETREAT && _ball_is_coming():
+		_enter_state(State.CHASE)
+	
 
 func _enter_state(new_state: State) -> void:
 	state = new_state
-	print(state)
+
+
+func _ball_is_coming() -> bool:
+	return sign(_sidify_f(GameData.BALL.linear_velocity.x)) == -1
 
 
 func _find_chase_position() -> Vector2:
@@ -85,13 +90,12 @@ func _find_strike_position() -> Vector2:
 
 func _sidify_vec(vec: Vector2) -> Vector2:
 	var ret = vec
-	if SIDE == SIDE_LEFT:
-		ret.x *= -1
+	ret.x = _sidify_f(vec.x)
 	return ret
 
 
 func _sidify_f(f: float) -> float:
 	var ret = f
-	if SIDE == SIDE_LEFT:
+	if SIDE == SIDE_RIGHT:
 		ret *= -1
 	return ret

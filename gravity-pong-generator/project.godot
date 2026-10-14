@@ -24,11 +24,16 @@ GameData="*uid://d3gr52fjydus7"
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
+[editor]
+
+movie_writer/movie_file="/home/jude/Documents/EECS4740-AI-Group-Project/gravity-pong-generator/demo.avi"
+
 [global_group]
 
 ball=""
 net=""
 ground=""
+paddle=""
 
 [physics]
 

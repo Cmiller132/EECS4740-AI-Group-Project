@@ -8,6 +8,7 @@ var GROUND: StaticBody2D
 var net_x: float
 var bound_l: float
 var bound_r: float
+var ground_level: float
 
 
 func _ready() -> void:
@@ -25,6 +26,7 @@ func _on_tree_ready() -> void:
 	var bound_offset: float = GROUND.get_bound_offset_x()
 	bound_l = GROUND.position.x - bound_offset
 	bound_r = GROUND.position.x + bound_offset
+	ground_level = GROUND.get_ground_level()
 
 	get_tree().root.get_child(0).add_child(DebugLines.new())
 
@@ -33,19 +35,19 @@ func get_ball_position() -> Vector2:
 	return BALL.position
 
 
-func get_side_of_net(obj: Node2D) -> int:
-	if obj.position.x < NET.position.x:
+func get_side_of_net(position: Vector2) -> int:
+	if position.x < NET.position.x:
 		return SIDE_LEFT
 	else:
 		return SIDE_RIGHT
 
 
 func get_ball_side() -> int:
-	return get_side_of_net(BALL)
+	return get_side_of_net(BALL.position)
 
 
 func generate_max_speed() -> float:
-	return randf_range(200.0, 300.0)
+	return randf_range(350.0, 500.0)
 
 
 func _on_ball_body_entered(body: Node) -> void:

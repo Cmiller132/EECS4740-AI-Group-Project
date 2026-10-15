@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bppr03cvxjyam"]
 
-[ext_resource type="Script" uid="uid://byso2blqf5u7m" path="res://paddle.gd" id="1_0sbc1"]
-[ext_resource type="Texture2D" uid="uid://dlrq6mh2r34oj" path="res://square.png" id="2_tbytw"]
+[ext_resource type="Script" uid="uid://byso2blqf5u7m" path="res://paddle/paddle.gd" id="1_0sbc1"]
+[ext_resource type="Texture2D" uid="uid://dlrq6mh2r34oj" path="res://textures/square.png" id="2_tbytw"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ayuu8"]
 bounce = 1.0

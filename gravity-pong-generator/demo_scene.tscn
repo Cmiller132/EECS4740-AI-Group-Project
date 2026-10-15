@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://cvmy8sqrwekwq"]
 
 [ext_resource type="Script" uid="uid://cgwevbt5y6o8g" path="res://ground.gd" id="1_ayuu8"]
-[ext_resource type="Texture2D" uid="uid://dlrq6mh2r34oj" path="res://square.png" id="2_1hm1i"]
-[ext_resource type="PackedScene" uid="uid://bppr03cvxjyam" path="res://paddle.tscn" id="2_8n7uv"]
+[ext_resource type="Texture2D" uid="uid://dlrq6mh2r34oj" path="res://textures/square.png" id="2_1hm1i"]
+[ext_resource type="PackedScene" uid="uid://bppr03cvxjyam" path="res://paddle/paddle.tscn" id="2_8n7uv"]
 [ext_resource type="Script" uid="uid://da5ffb44pgrm8" path="res://ball.gd" id="3_ctgmk"]
-[ext_resource type="Texture2D" uid="uid://s2oqw1dc26bo" path="res://circle.png" id="4_om45m"]
+[ext_resource type="Texture2D" uid="uid://s2oqw1dc26bo" path="res://textures/circle.png" id="4_om45m"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cxmsn"]
 size = Vector2(47.8, 47.8)

@@ -4,11 +4,13 @@ extends Node
 var BALL: RigidBody2D
 var NET: StaticBody2D
 var GROUND: StaticBody2D
+var IMAGE_EXPORTER: ImageExporter = ImageExporter.new()
 
 var net_x: float
 var bound_l: float
 var bound_r: float
 var ground_level: float
+
 
 
 func _ready() -> void:
@@ -28,7 +30,13 @@ func _on_tree_ready() -> void:
 	bound_r = GROUND.position.x + bound_offset
 	ground_level = GROUND.get_ground_level()
 
-	get_tree().root.get_child(0).add_child(DebugLines.new())
+	# uncomment to draw debugging lines
+	#get_tree().root.get_child(0).add_child(DebugLines.new())
+	get_tree().root.get_child(0).add_child(IMAGE_EXPORTER)
+
+
+func _physics_process(_delta: float) -> void:
+	IMAGE_EXPORTER.render_data()
 
 
 func get_ball_position() -> Vector2:

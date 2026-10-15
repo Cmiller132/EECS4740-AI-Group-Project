@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://dtb07pjj8xjip"]
+
+[ext_resource type="Texture2D" uid="uid://dlrq6mh2r34oj" path="res://textures/square.png" id="1_ygrrp"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cxmsn"]
+size = Vector2(47.8, 47.8)
+
+[node name="Net" type="StaticBody2D" unique_id=703610259 groups=["net"]]
+scale = Vector2(0.4, 3.005)
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1242918924]
+scale = Vector2(0.375, 0.375)
+texture = ExtResource("1_ygrrp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=564719157]
+shape = SubResource("RectangleShape2D_cxmsn")

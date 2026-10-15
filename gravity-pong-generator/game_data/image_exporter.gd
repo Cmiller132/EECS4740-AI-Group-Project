@@ -39,7 +39,7 @@ func _generate_label_data() -> String:
 		"ball_bounding_box_y": bb.position.y,
 		"ball_bounding_box_width": bb.size.x,
 		"ball_bounding_box_height": bb.size.y,
-		"ball_visibility": true,
+		"ball_visibility": GameData.is_ball_on_screen(),
 		"simulation_scenario_id": -1,
 	}
 

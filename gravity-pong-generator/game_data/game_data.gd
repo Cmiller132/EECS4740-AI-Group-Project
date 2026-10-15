@@ -43,6 +43,11 @@ func get_ball_position() -> Vector2:
 	return BALL.position
 
 
+func is_ball_on_screen() -> bool:
+	var bb: Rect2 = BALL.get_bounding_box()
+	return get_viewport().get_visible_rect().encloses(bb)
+
+
 func get_side_of_net(position: Vector2) -> int:
 	if position.x < NET.position.x:
 		return SIDE_LEFT

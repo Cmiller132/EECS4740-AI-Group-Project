@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cgwevbt5y6o8g" path="res://ground.gd" id="1_ayuu8"]
 [ext_resource type="Texture2D" uid="uid://dfddh66qpj1y" path="res://icon.svg" id="1_iapjp"]
 [ext_resource type="PackedScene" uid="uid://bppr03cvxjyam" path="res://paddle.tscn" id="2_8n7uv"]
+[ext_resource type="Script" uid="uid://da5ffb44pgrm8" path="res://ball.gd" id="3_ctgmk"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cxmsn"]
 size = Vector2(47.8, 47.8)
@@ -47,6 +48,7 @@ shape = SubResource("RectangleShape2D_cxmsn")
 position = Vector2(240, 337)
 physics_material_override = SubResource("PhysicsMaterial_cxmsn")
 contact_monitor = true
+script = ExtResource("3_ctgmk")
 metadata/_edit_group_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="Ball" unique_id=1882952461]

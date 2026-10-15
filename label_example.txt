@@ -1,0 +1,14 @@
+0, 0 is the top left corner
+coordinates are given in terms of pixels (+x right, +y down)
+actual output will not have whitespace
+example output starts on next line
+{
+	"ball_bounding_box_height":24.020824432373,
+	"ball_bounding_box_width":24.020824432373,
+	"ball_bounding_box_x":586.536804199219,
+	"ball_bounding_box_y":568.850219726562,
+	"ball_center_x":598.547241210938,
+	"ball_center_y":580.860656738281,
+	"ball_visibility":true,
+	"frame_id":314,"simulation_scenario_id":-1
+}

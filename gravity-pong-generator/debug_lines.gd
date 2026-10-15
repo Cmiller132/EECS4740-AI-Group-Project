@@ -15,6 +15,9 @@ func _draw() -> void:
 	_draw_vert_line(GameData.bound_r, Color.GREEN)
 	_draw_hori_line(GameData.ground_level, Color.GREEN)
 
+	var ball_bounds: Rect2 = GameData.BALL.get_bounding_box()
+	draw_rect(ball_bounds, Color.CYAN, false)
+
 	for paddle in paddles:
 		var pos: Vector2 = paddle.ai.find_movement_data(paddle.position).target_pos
 		draw_circle(pos, 20, Color.RED)

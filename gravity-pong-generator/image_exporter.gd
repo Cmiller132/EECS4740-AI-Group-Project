@@ -29,17 +29,16 @@ func render_data() -> void:
 
 
 func _generate_label_data() -> String:
-	var ball_pos := GameData.get_ball_position()
-	var bb_dims: Vector2 = GameData.BALL.get_bounding_box_dimensions()
-	var bb_pos: Vector2 = GameData.BALL.get_bounding_box_coords()
+	var ball_pos: Vector2 = GameData.get_ball_position()
+	var bb: Rect2 = GameData.BALL.get_bounding_box()
 	var data: Dictionary = {
 		"frame_id": next_id,
 		"ball_center_x": ball_pos.x,
 		"ball_center_y": ball_pos.y,
-		"ball_bounding_box_x": bb_pos.x,
-		"ball_bounding_box_y": bb_pos.y,
-		"ball_bounding_box_width": bb_dims.x,
-		"ball_bounding_box_height": bb_dims.y,
+		"ball_bounding_box_x": bb.position.x,
+		"ball_bounding_box_y": bb.position.y,
+		"ball_bounding_box_width": bb.size.x,
+		"ball_bounding_box_height": bb.size.y,
 		"ball_visibility": true,
 		"simulation_scenario_id": -1,
 	}

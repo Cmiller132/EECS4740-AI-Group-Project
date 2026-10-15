@@ -1,13 +1,11 @@
 [gd_scene format=3 uid="uid://bppr03cvxjyam"]
 
 [ext_resource type="Script" uid="uid://byso2blqf5u7m" path="res://paddle.gd" id="1_0sbc1"]
+[ext_resource type="Texture2D" uid="uid://dlrq6mh2r34oj" path="res://square.png" id="2_tbytw"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ayuu8"]
 bounce = 1.0
 absorbent = true
-
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_8n7uv"]
-load_path = "res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ctgmk"]
 size = Vector2(48, 48)
@@ -21,7 +19,7 @@ metadata/_edit_group_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=78385292]
 scale = Vector2(0.375, 0.375)
-texture = SubResource("CompressedTexture2D_8n7uv")
+texture = ExtResource("2_tbytw")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=901331432]
 shape = SubResource("RectangleShape2D_ctgmk")

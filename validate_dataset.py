@@ -1,80 +1,118 @@
+
+import json
 from pathlib import Path
+from PIL import Image
+import math
 
-# locationo of our training data
+# Godot dataset folder
 DATASET_DIR = Path("dataset")
-
 IMAGES_DIR = DATASET_DIR / "images"
 LABELS_DIR = DATASET_DIR / "labels"
 
+REQUIRED_FIELDS = [
+    "frame_id",
+    "ball_center_x",
+    "ball_center_y",
+    "ball_bounding_box_x",
+    "ball_bounding_box_y",
+    "ball_bounding_box_width",
+    "ball_bounding_box_height",
+    "ball_visibility",
+    "simulation_scenario_id",
+]
+
 
 def validate_dataset():
-    """
-    Validate the dataset directory structure and contents.
-    """
-    # Check if the dataset directory exists
-    if not DATASET_DIR.exists():
-        raise FileNotFoundError(f"Dataset directory '{DATASET_DIR}' does not exist.")
+    print("Starting Godot dataset validation...")
 
-    # Check if the images directory exists
-    if not IMAGES_DIR.exists():
-        raise FileNotFoundError(f"Images directory '{IMAGES_DIR}' does not exist.")
+    if not IMAGES_DIR.is_dir():
+        raise FileNotFoundError("Images directory not found.")
 
-    # Check if the labels directory exists
-    if not LABELS_DIR.exists():
-        raise FileNotFoundError(f"Labels directory '{LABELS_DIR}' does not exist.")
+    if not LABELS_DIR.is_dir():
+        raise FileNotFoundError("Labels directory not found.")
 
-    # Check if there are any image files in the images directory
-    image_files = list(IMAGES_DIR.glob("*.jpg")) + list(IMAGES_DIR.glob("*.png"))
-    if not image_files:
-        raise ValueError(f"No image files found in '{IMAGES_DIR}'.")
+    images = sorted(IMAGES_DIR.glob("*.png"))
 
-    # Check if there are any label files in the labels directory
-    label_files = list(LABELS_DIR.glob("*.txt"))
-    if not label_files:
-        raise ValueError(f"No label files found in '{LABELS_DIR}'.")
+    if not images:
+        raise ValueError("No PNG images found.")
 
-    # Check that each image has a corresponding label file
-    for image_file in image_files:
-        label_file = LABELS_DIR / (image_file.stem + ".txt")
-        if not label_file.exists():
-            raise ValueError(f"Label file '{label_file}' does not exist for image '{image_file}'.")
+    for image in images:
+        # Godot exports 0.png with 0.txt, 1.png with 1.txt
+        label_path = LABELS_DIR / f"{image.stem}.txt"
 
-    # Validate YOLO annotation format and coordinates
-    for label_file in label_files:
-        with open(label_file, "r") as file:
-            for line_number, line in enumerate(file, start=1):
-                values = line.strip().split()
+        if not label_path.exists():
+            raise ValueError(f"Missing label for {image.name}")
 
-                if not values:
-                    continue  # Empty labels are allowed
+        # Read JSON from the .txt file
+        try:
+            with open(label_path, "r", encoding="utf-8") as file:
+                data = json.load(file)
+        except json.JSONDecodeError as error:
+            raise ValueError(
+                f"Invalid JSON in {label_path.name}: {error}"
+            ) from error
 
-                if len(values) != 5:
-                    raise ValueError(
-                        f"Invalid YOLO format in {label_file.name}, line {line_number}"
-                    )
+        if not isinstance(data, dict):
+            raise ValueError(f"Expected JSON object in {label_path.name}")
 
-                class_id, x, y, width, height = map(float, values)
+        # Check required fields
+        for field in REQUIRED_FIELDS:
+            if field not in data:
+                raise ValueError(
+                    f"Missing '{field}' in {label_path.name}"
+                )
 
-                if class_id != 0:
-                    raise ValueError(f"Invalid class ID in {label_file.name}")
+        # Check image/frame correspondence
+        if data["frame_id"] != int(image.stem):
+            raise ValueError(
+                f"Frame ID mismatch in {label_path.name}"
+            )
 
-                if not all(0 <= v <= 1 for v in [x, y, width, height]):
-                    raise ValueError(
-                        f"Coordinates out of range in {label_file.name}"
-                    )
+        # Check visibility data type
+        if not isinstance(data["ball_visibility"], bool):
+            raise ValueError("ball_visibility must be true or false")
 
-                if width <= 0 or height <= 0:
-                    raise ValueError(
-                        f"Invalid bounding box size in {label_file.name}"
-                    )
+        # Check bounding-box values
+        x = data["ball_bounding_box_x"]
+        y = data["ball_bounding_box_y"]
+        width = data["ball_bounding_box_width"]
+        height = data["ball_bounding_box_height"]
 
-                if x - width / 2 < 0 or x + width / 2 > 1 or \
-                y - height / 2 < 0 or y + height / 2 > 1:
-                    raise ValueError(
-                        f"Bounding box extends outside image in {label_file.name}"
-                    )
+        for value in [x, y, width, height]:
+            if type(value) not in (int, float):
+                raise ValueError(
+                    f"Invalid bounding-box value in {label_path.name}"
+                )
 
-    print("Dataset validation successful. All required directories and files are present.")
+        if width <= 0 or height <= 0:
+            raise ValueError(
+                f"Invalid bounding-box dimensions in {label_path.name}"
+            )
+
+        if x < 0 or y < 0:
+            raise ValueError(
+                f"Negative bounding-box position in {label_path.name}"
+            )
+
+        # Check that the bounding box is within the image dimensions
+        with Image.open(image) as img:
+            img_width, img_height = img.size
+
+        #Verify bounding box are finite
+        if not all(math.isfinite(value) for value in [x, y, width, height]):
+            raise ValueError(
+                f"Bounding box values must be finite in {label_path.name}"
+            )
+        #Check whether the bounding box fit inside the image
+        if x + width > img_width or y + height > img_height:
+            raise ValueError(
+                f"Bounding box exceeds image dimensions in {label_path.name}"
+            )
+
+        print(f"OK: {image.name} and {label_path.name}")
+
+    print(f"Validation successful! Checked {len(images)} frames.")
+
 
 if __name__ == "__main__":
     validate_dataset()

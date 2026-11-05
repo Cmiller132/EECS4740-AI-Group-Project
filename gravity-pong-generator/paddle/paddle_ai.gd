@@ -105,7 +105,7 @@ func _find_strike_position() -> Vector2:
 ## positive x is towards the goal, and negative x is towards the out zone
 func _find_ball_offset(position) -> Vector2:
 	var ret: Vector2 = GameData.get_ball_position() - position
-	_sidify_vec(ret)
+	ret = _sidify_vec(ret)
 	return ret
 	
 

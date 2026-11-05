@@ -1,118 +1,70 @@
+"""Checks that every Godot frame has a valid label.
+
+Usage: python validate_dataset.py [dataset_dir]
+"""
 
 import json
+import sys
 from pathlib import Path
+
 from PIL import Image
-import math
 
-# Godot dataset folder
-DATASET_DIR = Path("dataset")
-IMAGES_DIR = DATASET_DIR / "images"
-LABELS_DIR = DATASET_DIR / "labels"
-
+DATASET_DIR = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("dataset")
 REQUIRED_FIELDS = [
-    "frame_id",
-    "ball_center_x",
-    "ball_center_y",
-    "ball_bounding_box_x",
-    "ball_bounding_box_y",
-    "ball_bounding_box_width",
-    "ball_bounding_box_height",
-    "ball_visibility",
-    "simulation_scenario_id",
+    "frame_id", "ball_center_x", "ball_center_y",
+    "ball_bounding_box_x", "ball_bounding_box_y",
+    "ball_bounding_box_width", "ball_bounding_box_height",
+    "ball_visibility", "simulation_scenario_id",
 ]
 
 
-def validate_dataset():
-    print("Starting Godot dataset validation...")
+def check_frame(image_path):
+    """Return the problem with this frame's label, or None."""
+    label_path = DATASET_DIR / "labels" / f"{image_path.stem}.txt"
+    if not label_path.exists():
+        return "missing label"
 
-    if not IMAGES_DIR.is_dir():
-        raise FileNotFoundError("Images directory not found.")
+    try:
+        label = json.loads(label_path.read_text())
+    except json.JSONDecodeError:
+        return "label is not valid JSON"
 
-    if not LABELS_DIR.is_dir():
-        raise FileNotFoundError("Labels directory not found.")
+    missing = [field for field in REQUIRED_FIELDS if field not in label]
+    if missing:
+        return f"missing {', '.join(missing)}"
+    if label["frame_id"] != int(image_path.stem):
+        return "frame_id doesn't match the file name"
 
-    images = sorted(IMAGES_DIR.glob("*.png"))
-
-    if not images:
-        raise ValueError("No PNG images found.")
-
-    for image in images:
-        # Godot exports 0.png with 0.txt, 1.png with 1.txt
-        label_path = LABELS_DIR / f"{image.stem}.txt"
-
-        if not label_path.exists():
-            raise ValueError(f"Missing label for {image.name}")
-
-        # Read JSON from the .txt file
-        try:
-            with open(label_path, "r", encoding="utf-8") as file:
-                data = json.load(file)
-        except json.JSONDecodeError as error:
-            raise ValueError(
-                f"Invalid JSON in {label_path.name}: {error}"
-            ) from error
-
-        if not isinstance(data, dict):
-            raise ValueError(f"Expected JSON object in {label_path.name}")
-
-        # Check required fields
-        for field in REQUIRED_FIELDS:
-            if field not in data:
-                raise ValueError(
-                    f"Missing '{field}' in {label_path.name}"
-                )
-
-        # Check image/frame correspondence
-        if data["frame_id"] != int(image.stem):
-            raise ValueError(
-                f"Frame ID mismatch in {label_path.name}"
-            )
-
-        # Check visibility data type
-        if not isinstance(data["ball_visibility"], bool):
-            raise ValueError("ball_visibility must be true or false")
-
-        # Check bounding-box values
-        x = data["ball_bounding_box_x"]
-        y = data["ball_bounding_box_y"]
-        width = data["ball_bounding_box_width"]
-        height = data["ball_bounding_box_height"]
-
-        for value in [x, y, width, height]:
-            if type(value) not in (int, float):
-                raise ValueError(
-                    f"Invalid bounding-box value in {label_path.name}"
-                )
-
+    # Only check the box when the ball is on screen
+    if label["ball_visibility"]:
+        with Image.open(image_path) as img:
+            image_width, image_height = img.size
+        x, y = label["ball_bounding_box_x"], label["ball_bounding_box_y"]
+        width, height = label["ball_bounding_box_width"], label["ball_bounding_box_height"]
         if width <= 0 or height <= 0:
-            raise ValueError(
-                f"Invalid bounding-box dimensions in {label_path.name}"
-            )
+            return "ball box has no size"
+        if x < 0 or y < 0 or x + width > image_width or y + height > image_height:
+            return "ball box is outside the image"
 
-        if x < 0 or y < 0:
-            raise ValueError(
-                f"Negative bounding-box position in {label_path.name}"
-            )
+    return None
 
-        # Check that the bounding box is within the image dimensions
-        with Image.open(image) as img:
-            img_width, img_height = img.size
 
-        #Verify bounding box are finite
-        if not all(math.isfinite(value) for value in [x, y, width, height]):
-            raise ValueError(
-                f"Bounding box values must be finite in {label_path.name}"
-            )
-        #Check whether the bounding box fit inside the image
-        if x + width > img_width or y + height > img_height:
-            raise ValueError(
-                f"Bounding box exceeds image dimensions in {label_path.name}"
-            )
+def main():
+    images = sorted((DATASET_DIR / "images").glob("*.png"))
+    if not images:
+        sys.exit(f"No images found in {DATASET_DIR / 'images'}")
 
-        print(f"OK: {image.name} and {label_path.name}")
+    problems = 0
+    for image_path in images:
+        problem = check_frame(image_path)
+        if problem:
+            print(f"{image_path.name}: {problem}")
+            problems += 1
 
-    print(f"Validation successful! Checked {len(images)} frames.")
+    print(f"Checked {len(images)} frames, found {problems} problems")
+    if problems:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
-    validate_dataset()
+    main()

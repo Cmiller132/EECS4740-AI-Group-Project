@@ -16,6 +16,7 @@ func _ready() -> void:
 
 ## generate image and label of current view
 func render_data() -> void:
+	await RenderingServer.frame_post_draw
 	while FileAccess.file_exists(_generate_image_filename()):
 		next_id += 1
 

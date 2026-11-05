@@ -31,7 +31,7 @@ func _on_tree_ready() -> void:
 	ground_level = GROUND.get_ground_level()
 
 	# uncomment to draw debugging lines
-	get_tree().root.get_child(0).add_child(DebugLines.new())
+	#get_tree().root.get_child(0).add_child(DebugLines.new())
 	get_tree().root.get_child(0).add_child(IMAGE_EXPORTER)
 
 
